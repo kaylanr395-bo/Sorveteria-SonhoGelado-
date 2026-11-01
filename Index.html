@@ -1,0 +1,99 @@
+    <script>
+        let carrinho = [];
+        let quantidades = { picole: 1, p200: 1, p400: 1 };
+
+        function alterarQtd(tipo, delta) {
+            quantidades[tipo] = Math.max(1, quantidades[tipo] + delta);
+            document.getElementById(`qtd-${tipo}`).textContent = quantidades[tipo];
+        }
+
+        function adicionarPicole() {
+            const sabor = document.getElementById('sabor-picole').value;
+            if (!sabor) { alert('⚠️ Escolha o sabor do picolé!'); return; }
+            const qtd = quantidades.picole;
+            carrinho.push({ tipo: 'Picolé', sabor: sabor, qtd: qtd, preco: 1.25 });
+            atualizarCarrinho();
+            document.getElementById('sabor-picole').value = '';
+            quantidades.picole = 1;
+            document.getElementById('qtd-picole').textContent = '1';
+        }
+
+        function adicionar200ml() {
+            const sabor = document.getElementById('sabor-200ml').value;
+            if (!sabor) { alert('⚠️ Escolha o sabor do sorvete!'); return; }
+            const qtd = quantidades.p200;
+            carrinho.push({ tipo: 'Sorvete 200ml', sabor: sabor, qtd: qtd, preco: 3.00 });
+            atualizarCarrinho();
+            document.getElementById('sabor-200ml').value = '';
+            quantidades.p200 = 1;
+            document.getElementById('qtd-p200').textContent = '1';
+        }
+
+        function adicionar400ml() {
+            const sabor = document.getElementById('sabor-400ml').value;
+            if (!sabor) { alert('⚠️ Escolha o sabor do sorvete!'); return; }
+            const qtd = quantidades.p400;
+            carrinho.push({ tipo: 'Sorvete 400ml', sabor: sabor, qtd: qtd, preco: 5.00 });
+            atualizarCarrinho();
+            document.getElementById('sabor-400ml').value = '';
+            quantidades.p400 = 1;
+            document.getElementById('qtd-p400').textContent = '1';
+        }
+
+        function removerItem(indice) {
+            carrinho.splice(indice, 1);
+            atualizarCarrinho();
+        }
+
+        function atualizarCarrinho() {
+            const itensDiv = document.getElementById('itens');
+            const totalEl = document.getElementById('valorTotal');
+            
+            if (carrinho.length === 0) {
+                itensDiv.innerHTML = '<p class="carrinho-vazio">Seu pedido está vazio 😋<br>Adicione os itens acima!</p>';
+                totalEl.textContent = 'R$ 0,00';
+                return;
+            }
+
+            let total = 0;
+            itensDiv.innerHTML = '';
+            
+            carrinho.forEach((item, indice) => {
+                const subtotal = item.qtd * item.preco;
+                total += subtotal;
+                itensDiv.innerHTML += `
+                    <div class="pedido-grupo">
+                        <div class="pedido-tipo">${item.tipo}</div>
+                        <div class="pedido-detalhe">Sabor: ${item.sabor}</div>
+                        <div class="pedido-detalhe">Quantidade: ${item.qtd} × R$ ${item.preco.toFixed(2)}</div>
+                        <div class="pedido-subtotal">Subtotal: R$ ${subtotal.toFixed(2)}</div>
+                        <button class="remover-item" onclick="removerItem(${indice})">🗑️ Remover</button>
+                    </div>
+                `;
+            });
+            
+            totalEl.textContent = `R$ ${total.toFixed(2)}`;
+        }
+
+        function finalizarPedido() {
+            if (carrinho.length === 0) {
+                alert('🛒 Seu carrinho está vazio! Adicione alguns itens primeiro.');
+                return;
+            }
+            
+            let mensagem = '🍦 *NOVO PEDIDO — Sonho Gelado* ❄️\n\n';
+            let totalGeral = 0;
+            
+            carrinho.forEach(item => {
+                const subtotal = item.qtd * item.preco;
+                totalGeral += subtotal;
+                mensagem += `${item.tipo} — Sabor: ${item.sabor}\nQuantidade: ${item.qtd} — R$ ${subtotal.toFixed(2)}\n`;
+            });
+            
+            mensagem += `\n💰 *TOTAL: R$ ${totalGeral.toFixed(2)}*`;
+            mensagem = encodeURIComponent(mensagem);
+            
+            // ⚠️ COLOQUE SEU NÚMERO DO WHATSAPP ABAIXO
+            window.open(`https://wa.me/5581991094060?text=${mensagem}`, '_blank');
+        }
+    </script>
